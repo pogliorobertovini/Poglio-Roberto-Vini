@@ -4,7 +4,7 @@
  */
 
 export const SITE = {
-  url: "https://www.poglioroberto.it", // TODO: domínio definitivo
+  url: "https://www.pogliorobertovini.com",
   company: "Azienda Agricola Vitivinicola Poglio Roberto",
   brand: "Poglio Roberto",
   town: "Castelnuovo Calcea",
@@ -14,13 +14,14 @@ export const SITE = {
 
 /** Contatos. `null` = ainda não temos; o site mostra um marcador. */
 export const CONTACT = {
-  address: null as string | null, // TODO: endereço completo
+  address: "Via Angelo Brofferio, 43" as string | null, // TODO: confirmar "Via" e o número
   zip: "14040",
-  phoneDisplay: null as string | null, // TODO: "+39 333 123 4567"
-  whatsapp: null as string | null, // TODO: só dígitos com DDI, ex. "393331234567"
-  email: null as string | null, // TODO: e-mail principal
-  emailTrade: null as string | null, // TODO: e-mail para importadores (pode ser o mesmo)
-  instagram: null as string | null, // TODO: URL do perfil
+  phoneDisplay: "+39 345 886 7026" as string | null,
+  whatsapp: "393458867026" as string | null, // TODO: confirmar que o mesmo número tem WhatsApp
+  email: "pogliorobertovini@gmail.com" as string | null,
+  emailTrade: "pogliorobertovini@gmail.com" as string | null, // TODO: separar, se houver e-mail só para importadores
+  instagram: "https://www.instagram.com/poglio.roberto.vini/" as string | null,
+  instagramHandle: "@poglio.roberto.vini",
   vat: null as string | null, // TODO: P. IVA
 };
 

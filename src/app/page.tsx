@@ -14,8 +14,12 @@ const jsonLd = {
   name: SITE.brand,
   legalName: SITE.company,
   url: SITE.url,
+  telephone: CONTACT.phoneDisplay,
+  email: CONTACT.email,
+  sameAs: [CONTACT.instagram],
   address: {
     "@type": "PostalAddress",
+    streetAddress: CONTACT.address,
     postalCode: CONTACT.zip,
     addressLocality: SITE.town,
     addressRegion: SITE.province,

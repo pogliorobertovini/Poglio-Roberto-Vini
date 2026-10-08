@@ -41,7 +41,7 @@ export function Contatti() {
                 <dd>
                   {CONTACT.instagram ? (
                     <a href={CONTACT.instagram} target="_blank" rel="noopener noreferrer">
-                      Instagram
+                      {CONTACT.instagramHandle}
                     </a>
                   ) : (
                     TBD
