@@ -39,19 +39,24 @@ export class BottleControl {
 const TAU = Math.PI * 2;
 const LABEL_ASPECT = 1100 / 1400; // largura / altura das texturas em /public/labels
 const LABEL_H = 12.6;
-const LABEL_Y = 11.2; // centro do rótulo na garrafa (cm)
 const BACK_ASPECT = 0.857; // contrarrótulo 60x70 mm
 const BACK_H = 7.35;
-const BACK_Y = 10.8;
 
 /* ——— variantes visuais ——— */
-export type BottleVariant = "classica" | "satinata" | "morbida" | "albeisa";
+export type BottleVariant = "antica" | "classica" | "satinata" | "morbida" | "albeisa";
 
 type Light = { i: number; c: string; p: [number, number, number]; s: [number, number, number] };
 type Look = {
-  shape: "bordeaux" | "albeisa";
+  shape: "bordeaux" | "albeisa" | "antica";
+  /** altura do centro do rótulo e do contrarrótulo (cm) */
+  labelY: number;
+  backY: number;
   glass: {
+    /** cor do vidro nas bordas (a parte mais escura) */
     color: string;
+    /** luz "de dentro": cor e força no centro do vidro (simula a luz atravessando o verde) */
+    tint?: string;
+    tintAmt?: number;
     roughness: number;
     transmission: number;
     thickness: number;
@@ -69,9 +74,29 @@ type Look = {
 };
 
 export const VARIANTS: Record<BottleVariant, Look> = {
-  // a atual: vidro brilhante, reflexos fortes
+  // a da foto de referência: Bordeaux de pescoço longo, vidro verde antigo (oliva) translúcido, luz suave
+  antica: {
+    shape: "antica",
+    labelY: 10.4,
+    backY: 10.0,
+    glass: { color: "#252c10", tint: "#76742f", tintAmt: 0.42, roughness: 0.16, transmission: 0, thickness: 0, attenuationColor: "#4d5a1c", attenuationDistance: 2, clearcoat: 0.5, clearcoatRoughness: 0.22, envMapIntensity: 0.85 },
+    cap: { metalness: 0.35, roughness: 0.42, clearcoat: 0.2, envMapIntensity: 0.9 },
+    bg: "#2c2620",
+    lights: [
+      { i: 3.4, c: "#fff6ea", p: [-9, 5, 7], s: [5, 28, 1] },
+      { i: 2.4, c: "#fff6ea", p: [10, 4, 6], s: [3.5, 28, 1] },
+      { i: 2.4, c: "#ffffff", p: [0, 15, 3], s: [18, 8, 1] },
+      { i: 0.7, c: "#ffd9b0", p: [0, -2, 11], s: [22, 3, 1] },
+      { i: 3, c: "#fff6ea", p: [0, 4, -11], s: [18, 14, 1] },
+    ],
+    key: 1.15,
+    fill: 0.5,
+  },
+  // vidro brilhante, reflexos fortes (o primeiro modelo)
   classica: {
     shape: "bordeaux",
+    labelY: 11.2,
+    backY: 10.8,
     glass: { color: "#1c4d2c", roughness: 0.04, transmission: 0.82, thickness: 2.6, attenuationColor: "#0e5a2a", attenuationDistance: 2.2, clearcoat: 1, clearcoatRoughness: 0.02, envMapIntensity: 1.5 },
     cap: { metalness: 0.55, roughness: 0.28, clearcoat: 0.6, envMapIntensity: 1.2 },
     bg: "#241f1a",
@@ -88,6 +113,8 @@ export const VARIANTS: Record<BottleVariant, Look> = {
   // vidro verde escuro fosco/acetinado: sem brilho forte, luz difusa
   satinata: {
     shape: "bordeaux",
+    labelY: 11.2,
+    backY: 10.8,
     glass: { color: "#143019", roughness: 0.34, transmission: 0, thickness: 0, attenuationColor: "#0e5a2a", attenuationDistance: 2, clearcoat: 0.35, clearcoatRoughness: 0.4, envMapIntensity: 0.85 },
     cap: { metalness: 0.3, roughness: 0.5, clearcoat: 0.1, envMapIntensity: 0.8 },
     bg: "#2c2620",
@@ -104,6 +131,8 @@ export const VARIANTS: Record<BottleVariant, Look> = {
   // vidro verde antigo translúcido, luz suave e ampla: dá para ver o vinho por dentro
   morbida: {
     shape: "bordeaux",
+    labelY: 11.2,
+    backY: 10.8,
     glass: { color: "#9cc48a", roughness: 0.2, transmission: 0.93, thickness: 3.2, attenuationColor: "#3f7a2a", attenuationDistance: 2.4, clearcoat: 0.15, clearcoatRoughness: 0.35, envMapIntensity: 0.6 },
     cap: { metalness: 0.35, roughness: 0.42, clearcoat: 0.2, envMapIntensity: 0.9 },
     bg: "#3a332b",
@@ -120,6 +149,8 @@ export const VARIANTS: Record<BottleVariant, Look> = {
   // formato "albeisa" (a garrafa tradicional do Piemonte): ombros em declive, vidro pesado, verde-oliva acetinado
   albeisa: {
     shape: "albeisa",
+    labelY: 11.2,
+    backY: 10.8,
     glass: { color: "#1d3a20", roughness: 0.3, transmission: 0, thickness: 0, attenuationColor: "#1b4a1f", attenuationDistance: 2, clearcoat: 0.4, clearcoatRoughness: 0.35, envMapIntensity: 0.9 },
     cap: { metalness: 0.4, roughness: 0.38, clearcoat: 0.25, envMapIntensity: 0.9 },
     bg: "#2c2620",
@@ -137,12 +168,25 @@ export const VARIANTS: Record<BottleVariant, Look> = {
 
 /* ——— geometria (unidades em cm; garrafa com 30 cm) ——— */
 function bodyRadius(shape: Look["shape"]) {
-  return shape === "albeisa" ? 3.95 : 3.82;
+  return shape === "albeisa" ? 3.95 : shape === "antica" ? 3.68 : 3.82;
 }
 
 function glassProfile(shape: Look["shape"]) {
   const v = (x: number, y: number) => new THREE.Vector2(x, y);
   const path = new THREE.CurvePath<THREE.Vector2>();
+  if (shape === "antica") {
+    // proporções medidas na foto de referência: pescoço longo (~8 cm), ombro suave, corpo reto
+    path.add(new THREE.CubicBezierCurve(v(0, 2.3), v(1.3, 2.3), v(2.4, 1.5), v(3.1, 0.4))); // fundo com punt fundo
+    path.add(new THREE.CubicBezierCurve(v(3.1, 0.4), v(3.3, 0.05), v(3.62, 0.1), v(3.68, 0.9))); // calcanhar
+    path.add(new THREE.LineCurve(v(3.68, 0.9), v(3.68, 16.7))); // corpo
+    path.add(new THREE.CubicBezierCurve(v(3.68, 16.7), v(3.68, 18.2), v(3.2, 19.1), v(2.55, 19.9))); // ombro (convexo)
+    path.add(new THREE.CubicBezierCurve(v(2.55, 19.9), v(1.95, 20.7), v(1.42, 21.1), v(1.42, 22.4))); // ombro (côncavo) até o pescoço
+    path.add(new THREE.LineCurve(v(1.42, 22.4), v(1.4, 28.4)));
+    path.add(new THREE.LineCurve(v(1.4, 28.4), v(1.58, 28.7))); // anel da boca
+    path.add(new THREE.LineCurve(v(1.58, 28.7), v(1.58, 29.8)));
+    path.add(new THREE.LineCurve(v(1.58, 29.8), v(1.4, 30.0)));
+    return path.getPoints(56);
+  }
   if (shape === "albeisa") {
     path.add(new THREE.CubicBezierCurve(v(0, 2.2), v(1.4, 2.2), v(2.5, 1.4), v(3.2, 0.3))); // fundo, punt fundo
     path.add(new THREE.CubicBezierCurve(v(3.2, 0.3), v(3.4, 0.0), v(3.9, 0.0), v(3.95, 1.0))); // calcanhar
@@ -170,10 +214,28 @@ function liquidProfile(glass: THREE.Vector2[]) {
   return pts;
 }
 
-const CAPSULE = [
-  [0, 30.1], [1.3, 30.1], [1.64, 29.95], [1.72, 29.6], [1.7, 29.0], [1.62, 28.6],
-  [1.6, 27.8], [1.6, 25.7], [1.64, 25.2], [1.67, 24.95],
-].map(([x, y]) => new THREE.Vector2(x, y));
+function capsuleProfile(shape: Look["shape"]) {
+  const pts =
+    shape === "antica"
+      ? [[0, 30.1], [1.2, 30.1], [1.52, 29.95], [1.62, 29.6], [1.6, 29.0], [1.53, 28.6], [1.51, 27.8], [1.51, 25.2], [1.55, 24.8], [1.58, 24.6]]
+      : [[0, 30.1], [1.3, 30.1], [1.64, 29.95], [1.72, 29.6], [1.7, 29.0], [1.62, 28.6], [1.6, 27.8], [1.6, 25.7], [1.64, 25.2], [1.67, 24.95]];
+  return pts.map(([x, y]) => new THREE.Vector2(x, y));
+}
+
+/** vidro com "luz de dentro": o centro fica mais claro e as bordas escuras, como o verde antigo na foto */
+function tintShader(tint: string, amt: number) {
+  const uniforms = { uTint: { value: new THREE.Color(tint) }, uAmt: { value: amt } };
+  return (shader: { uniforms: Record<string, unknown>; fragmentShader: string }) => {
+    shader.uniforms.uTint = uniforms.uTint;
+    shader.uniforms.uAmt = uniforms.uAmt;
+    shader.fragmentShader = shader.fragmentShader
+      .replace("void main() {", "uniform vec3 uTint;\nuniform float uAmt;\nvoid main() {")
+      .replace(
+        "#include <emissivemap_fragment>",
+        "#include <emissivemap_fragment>\n  float ndv = clamp(abs(dot(normalize(vNormal), normalize(vViewPosition))), 0.0, 1.0);\n  totalEmissiveRadiance += uTint * uAmt * pow(ndv, 1.6);",
+      );
+  };
+}
 
 /* ——— sombra de contato (disco com gradiente radial) ——— */
 function useShadowTexture() {
@@ -226,7 +288,7 @@ function Bottle({ wines, index, ctl, look }: { wines: Wine[]; index: number; ctl
     return {
       glassGeo: new THREE.LatheGeometry(prof, 128),
       liquidGeo: new THREE.LatheGeometry(liquidProfile(prof), 96),
-      capsuleGeo: new THREE.LatheGeometry(CAPSULE, 96),
+      capsuleGeo: new THREE.LatheGeometry(capsuleProfile(look.shape), 96),
       labelGeo: new THREE.CylinderGeometry(R, R, LABEL_H, 96, 1, true, -arc / 2, arc),
       backGeo: new THREE.CylinderGeometry(R, R, BACK_H, 64, 1, true, Math.PI - backArc / 2, backArc),
     };
@@ -237,6 +299,10 @@ function Bottle({ wines, index, ctl, look }: { wines: Wine[]; index: number; ctl
     [wines],
   );
   const shadowTex = useShadowTexture();
+  const onGlassCompile = useMemo(
+    () => (look.glass.tint ? tintShader(look.glass.tint, look.glass.tintAmt ?? 0.5) : undefined),
+    [look.glass.tint, look.glass.tintAmt],
+  );
 
   useFrame((state, dt) => {
     const r = run.current;
@@ -308,7 +374,9 @@ function Bottle({ wines, index, ctl, look }: { wines: Wine[]; index: number; ctl
             clearcoat={look.glass.clearcoat}
             clearcoatRoughness={look.glass.clearcoatRoughness}
             envMapIntensity={look.glass.envMapIntensity}
-            side={THREE.DoubleSide}
+            side={look.glass.tint ? THREE.FrontSide : THREE.DoubleSide}
+            onBeforeCompile={onGlassCompile}
+            customProgramCacheKey={() => (look.glass.tint ? "tint" : "plain")}
           />
         </mesh>
 
@@ -327,7 +395,7 @@ function Bottle({ wines, index, ctl, look }: { wines: Wine[]; index: number; ctl
         </mesh>
 
         {/* rótulo */}
-        <mesh geometry={labelGeo} position={[0, LABEL_Y, 0]}>
+        <mesh geometry={labelGeo} position={[0, look.labelY, 0]}>
           <meshStandardMaterial
             map={textures[shown]}
             roughness={0.78}
@@ -342,7 +410,7 @@ function Bottle({ wines, index, ctl, look }: { wines: Wine[]; index: number; ctl
         </mesh>
 
         {/* contrarrótulo (nas costas) */}
-        <mesh geometry={backGeo} position={[0, BACK_Y, 0]}>
+        <mesh geometry={backGeo} position={[0, look.backY, 0]}>
           <meshStandardMaterial
             map={textures[wines.length + shown]}
             roughness={0.8}
@@ -387,7 +455,7 @@ export default function Bottle3D({
   index,
   active,
   fallback,
-  variant = "classica",
+  variant = "antica",
 }: {
   wines: Wine[];
   index: number;

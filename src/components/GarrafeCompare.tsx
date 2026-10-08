@@ -9,7 +9,8 @@ import styles from "./GarrafeCompare.module.css";
 const Bottle3D = dynamic(() => import("./Bottle3D"), { ssr: false });
 
 const OPTIONS: { id: BottleVariant; n: string; title: string; text: string }[] = [
-  { id: "classica", n: "Atual", title: "Clássica brilhante", text: "Vidro polido, com reflexos fortes de luz. É a que está no ar agora." },
+  { id: "antica", n: "Nova", title: "Verde antigo (sua referência)", text: "Formato Bordeaux de pescoço longo e vidro oliva translúcido, como na foto que você mandou." },
+  { id: "classica", n: "Antiga", title: "Clássica brilhante", text: "Vidro polido, com reflexos fortes de luz (a primeira versão)." },
   { id: "satinata", n: "Opção 1", title: "Satinada", text: "Mesmo formato, vidro verde escuro fosco: sem brilhos fortes, luz suave e difusa." },
   { id: "morbida", n: "Opção 2", title: "Verde antigo translúcido", text: "Vidro verde mais claro e transparente, luz ampla e suave. Dá para ver o vinho por dentro." },
   { id: "albeisa", n: "Opção 3", title: "Albeisa piemontese", text: "Outro formato: a garrafa tradicional do Piemonte, ombros em declive e vidro pesado, em verde-oliva acetinado." },
