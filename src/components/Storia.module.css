@@ -114,11 +114,16 @@
   rotate: -3deg;
 }
 .second {
-  margin: -34px 0 0 40%;
+  align-self: flex-end;
+  margin: -4px 0 0;
   padding: 12px 12px 0;
-  width: min(62%, 300px);
+  width: min(78%, 360px);
   rotate: 4deg;
   z-index: 3;
+}
+/* a cartolina é horizontal: mantém a foto inteira, sem cortar em quadrado */
+.second img {
+  aspect-ratio: 2000 / 1387;
 }
 .second figcaption {
   font-size: 15px;

@@ -85,14 +85,13 @@ export function Storia() {
           </Reveal>
           <Reveal as="figure" className={`${styles.polaroid} ${styles.second}`} delay={0.15}>
             <Image
-              src="/images/vigna-neve.webp"
-              alt="La collina di Castelnuovo Calcea sotto la neve"
-              width={1200}
-              height={1600}
-              sizes="(max-width: 900px) 55vw, 300px"
-              style={{ objectPosition: "50% 45%" }}
+              src="/images/cartolina.webp"
+              alt="Vecchia cartolina in bianco e nero: panorama di Castelnuovo Calcea con il castello e il campanile tra gli alberi e le vigne"
+              width={2000}
+              height={1387}
+              sizes="(max-width: 900px) 70vw, 340px"
             />
-            <figcaption>La collina d&apos;inverno</figcaption>
+            <figcaption>Castelnuovo Calcea, una vecchia cartolina</figcaption>
           </Reveal>
         </div>
       </div>
