@@ -64,10 +64,12 @@ export function Vini() {
                   >
                     <span className={styles.num}>{String(i + 1).padStart(2, "0")}</span>
                     <span className={styles.names}>
-                      <span className={styles.name}>{w.name}</span>
+                      <span className={styles.name} style={w.accent ? { color: w.accent } : undefined}>
+                        {w.name}
+                      </span>
                       <span className={styles.denom}>{w.denom}</span>
                     </span>
-                    <i className={styles.swatch} style={{ background: w.tag }} aria-hidden />
+                    <i className={styles.swatch} style={{ background: w.accent ?? w.tag }} aria-hidden />
                   </button>
                 </li>
               ))}
@@ -98,7 +100,9 @@ export function Vini() {
           <Reveal delay={0.2} className={styles.infoCol}>
             <div key={wine.id} className={styles.info} aria-live="polite">
               <p className="occhiello red">{wine.denom}</p>
-              <h3 className={styles.title}>{wine.name}</h3>
+              <h3 className={styles.title} style={wine.accent ? { color: wine.accent } : undefined}>
+                {wine.name}
+              </h3>
               <p className={styles.text}>{wine.text}</p>
               {!wine.soon && (
                 <dl className={styles.facts}>

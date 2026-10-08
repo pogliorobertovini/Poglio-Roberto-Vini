@@ -14,6 +14,7 @@ const PAPER = "#2a2c34"; // carvão, como o rótulo La Bruciata
 const GOLD = "#d4a85a";
 const CREAM = "#f1e7d3";
 const TAG = "#6e1423"; // Rosso Barbera
+const YELLOW = "#efc65a"; // destaque "IN ARRIVO / NOVITÀ" na etiqueta
 const INSTAGRAM = "@poglio.roberto.vini";
 
 const font = (px) => `600 ${px}px Cinzel`;
@@ -69,11 +70,11 @@ function text(ctx, s, x, y, px, color, { align = "center", spacing = 0 } = {}) {
   g.fillStyle = TAG;
   g.fillRect(tx, ty, tw, th);
   const tc = tx + tw / 2;
-  text(g, "IN ARRIVO", tc, ty + 230, 76, CREAM, { spacing: 2 });
+  text(g, "IN ARRIVO", tc, ty + 230, 76, YELLOW, { spacing: 2 });
   g.fillStyle = "rgba(241,231,211,0.5)";
   g.fillRect(tc - 70, ty + 280, 140, 3);
-  text(g, "NOVITÀ", tc, ty + 360, 42, CREAM, { spacing: 4 });
-  text(g, "IN CANTINA", tc, ty + 412, 42, CREAM, { spacing: 4 });
+  text(g, "NOVITÀ", tc, ty + 360, 42, YELLOW, { spacing: 4 });
+  text(g, "IN CANTINA", tc, ty + 412, 42, YELLOW, { spacing: 4 });
   text(g, "SEGUICI SU", tc, ty + 600, 30, CREAM, { spacing: 4 });
   text(g, "INSTAGRAM", tc, ty + 642, 30, CREAM, { spacing: 4 });
 

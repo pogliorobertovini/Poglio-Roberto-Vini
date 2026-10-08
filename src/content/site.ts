@@ -111,6 +111,8 @@ export type Wine = {
   tag: string;
   /** garrafa "novità in arrivo": sem uva/annata, com chamada para o Instagram */
   soon?: boolean;
+  /** cor de destaque do nome (usada na garrafa "novità") */
+  accent?: string;
 };
 
 export const WINES: Wine[] = [
@@ -199,6 +201,7 @@ export const WINES: Wine[] = [
     liquid: "#1c0a10",
     tag: "#6e1423",
     soon: true,
+    accent: "#b07a12", // amarelo-âmbar: destaca das demais e mantém contraste sobre o creme
   },
 ];
 
