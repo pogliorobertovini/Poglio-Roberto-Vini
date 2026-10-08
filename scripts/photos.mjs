@@ -7,6 +7,9 @@ const jobs = [
   ["cantina.jpg", "cantina.webp", 1200],
   ["grappolo.jpg", "grappolo.webp", 1400],
   ["vendemmia.jpg", "vendemmia.webp", 1400],
+  ["../../okIMG_9202.jpg", "raccolta.webp", 1400],
+  ["../../IMG_5558.png", "vigneto.webp", 1600],
+  ["../../IMG_9683.png", "finestra.webp", 1600],
 ];
 for (const [src, dst, w] of jobs) {
   const info = await sharp(D + src).rotate().resize({ width: w, withoutEnlargement: true }).webp({ quality: 78 }).toFile("public/images/" + dst);

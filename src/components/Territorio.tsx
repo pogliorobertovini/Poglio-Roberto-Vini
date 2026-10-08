@@ -123,11 +123,11 @@ export function Territorio() {
 
           <Reveal delay={0.1} className={styles.soil}>
             <Image
-              src="/images/vigna-neve.webp"
-              alt="La terra della collina, con la neve e i segni del trattore"
+              src="/images/finestra.webp"
+              alt="Il paese di Castelnuovo Calcea con il campanile e i tetti, visto attraverso una foglia di vite"
               fill
               sizes="(max-width: 900px) 90vw, 560px"
-              style={{ objectFit: "cover", objectPosition: "40% 92%" }}
+              style={{ objectFit: "cover", objectPosition: "50% 50%" }}
             />
           </Reveal>
 
