@@ -79,7 +79,7 @@ export const VARIANTS: Record<BottleVariant, Look> = {
     shape: "antica",
     labelY: 10.4,
     backY: 10.0,
-    glass: { color: "#252c10", tint: "#76742f", tintAmt: 0.42, roughness: 0.16, transmission: 0, thickness: 0, attenuationColor: "#4d5a1c", attenuationDistance: 2, clearcoat: 0.5, clearcoatRoughness: 0.22, envMapIntensity: 0.85 },
+    glass: { color: "#d3dba3", tint: "#76742f", tintAmt: 0.08, roughness: 0.12, transmission: 0.92, thickness: 2.4, attenuationColor: "#56661f", attenuationDistance: 5.5, clearcoat: 0.5, clearcoatRoughness: 0.22, envMapIntensity: 0.85 },
     cap: { metalness: 0.35, roughness: 0.42, clearcoat: 0.2, envMapIntensity: 0.9 },
     bg: "#2c2620",
     lights: [
@@ -207,8 +207,8 @@ function glassProfile(shape: Look["shape"]) {
   return path.getPoints(56);
 }
 
-function liquidProfile(glass: THREE.Vector2[]) {
-  const pts = glass.filter((p) => p.y <= 24.3).map((p) => new THREE.Vector2(Math.max(0, p.x - 0.34), p.y + 0.02));
+function liquidProfile(glass: THREE.Vector2[], level: number) {
+  const pts = glass.filter((p) => p.y <= level).map((p) => new THREE.Vector2(Math.max(0, p.x - 0.34), p.y + 0.02));
   const last = pts[pts.length - 1];
   pts.push(new THREE.Vector2(0, last.y));
   return pts;
@@ -287,7 +287,7 @@ function Bottle({ wines, index, ctl, look }: { wines: Wine[]; index: number; ctl
     const backArc = (BACK_H * BACK_ASPECT) / R;
     return {
       glassGeo: new THREE.LatheGeometry(prof, 128),
-      liquidGeo: new THREE.LatheGeometry(liquidProfile(prof), 96),
+      liquidGeo: new THREE.LatheGeometry(liquidProfile(prof, look.shape === "antica" ? 23.3 : 24.3), 96),
       capsuleGeo: new THREE.LatheGeometry(capsuleProfile(look.shape), 96),
       labelGeo: new THREE.CylinderGeometry(R, R, LABEL_H, 96, 1, true, -arc / 2, arc),
       backGeo: new THREE.CylinderGeometry(R, R, BACK_H, 64, 1, true, Math.PI - backArc / 2, backArc),
@@ -350,6 +350,7 @@ function Bottle({ wines, index, ctl, look }: { wines: Wine[]; index: number; ctl
     const col = colors[shown];
     capMat.current?.color.lerp(col.cap, k);
     liqMat.current?.color.lerp(col.liq, k);
+    liqMat.current?.emissive.copy(liqMat.current.color); // o vinho "brilha" como se a luz o atravessasse
   });
 
   return (
@@ -357,7 +358,7 @@ function Bottle({ wines, index, ctl, look }: { wines: Wine[]; index: number; ctl
       <group ref={group}>
         {/* vinho */}
         <mesh geometry={liquidGeo}>
-          <meshStandardMaterial ref={liqMat} color={colors[0].liq} roughness={0.25} side={THREE.DoubleSide} />
+          <meshStandardMaterial ref={liqMat} color={colors[0].liq} emissive={colors[0].liq} emissiveIntensity={1.7} roughness={0.2} side={THREE.DoubleSide} />
         </mesh>
 
         {/* vidro */}

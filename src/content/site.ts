@@ -127,7 +127,7 @@ export const WINES: Wine[] = [
     label: "/labels/bruciata-label.webp",
     back: "/labels/bruciata-back.webp",
     capsule: "#1a1714",
-    liquid: "#2a0710",
+    liquid: "#8a0c2a",
     tag: "#a50b33",
   },
   {
@@ -141,7 +141,7 @@ export const WINES: Wine[] = [
     label: "/labels/frutteto-label.webp",
     back: "/labels/frutteto-back.webp",
     capsule: "#c9c6be",
-    liquid: "#b9a24a",
+    liquid: "#e0cb6c",
     tag: "#3f5e1e",
   },
   {
@@ -155,7 +155,7 @@ export const WINES: Wine[] = [
     label: "/labels/chiostro-label.webp",
     back: "/labels/chiostro-back.webp",
     capsule: "#8a2840",
-    liquid: "#5a1424",
+    liquid: "#b02a48",
     tag: "#8a2840",
   },
   {
@@ -169,7 +169,7 @@ export const WINES: Wine[] = [
     label: "/labels/cabianca-label.webp",
     back: "/labels/cabianca-back.webp",
     capsule: "#571e36",
-    liquid: "#3a0c1a",
+    liquid: "#76103c",
     tag: "#571e36",
   },
   {
@@ -183,7 +183,7 @@ export const WINES: Wine[] = [
     label: "/labels/nonu-label.webp",
     back: "/labels/nonu-back.webp",
     capsule: "#151515",
-    liquid: "#2a0710",
+    liquid: "#7a0c26",
     tag: "#2b2e36",
   },
   {
@@ -198,7 +198,7 @@ export const WINES: Wine[] = [
     label: "/labels/novita-label.webp",
     back: "/labels/novita-back.webp",
     capsule: "#b8923f",
-    liquid: "#1c0a10",
+    liquid: "#5a2a12",
     tag: "#6e1423",
     soon: true,
     accent: "#b07a12", // amarelo-âmbar: destaca das demais e mantém contraste sobre o creme
