@@ -83,7 +83,7 @@ export const VARIANTS: Record<BottleVariant, Look> = {
     shape: "antica",
     labelY: 10.4,
     backY: 10.0,
-    glass: { color: "#66763a", tint: "#6d6b2c", tintAmt: 0.1, roughness: 0.3, transmission: 0.35, thickness: 2.2, attenuationColor: "#2a3410", attenuationDistance: 2.4, clearcoat: 0.15, clearcoatRoughness: 0.45, envMapIntensity: 0.55, bump: 1.6, wineAmt: 0.88 },
+    glass: { color: "#66763a", tint: "#6d6b2c", tintAmt: 0.1, roughness: 0.3, transmission: 0.2, thickness: 2.2, attenuationColor: "#2a3410", attenuationDistance: 2.4, clearcoat: 0.15, clearcoatRoughness: 0.45, envMapIntensity: 0.55, bump: 1.6, wineAmt: 0.97 },
     cap: { metalness: 0.35, roughness: 0.42, clearcoat: 0.2, envMapIntensity: 0.9 },
     bg: "#2c2620",
     lights: [
@@ -255,7 +255,7 @@ function tintShader(tint: string, amt: number, wine: THREE.Color, level: number,
         `#include <color_fragment>
   float wineMask = 1.0 - smoothstep(uLevel - 0.05, uLevel + 0.05, vLocalY);
   float wnv = clamp(abs(dot(normalize(vNormal), normalize(vViewPosition))), 0.0, 1.0);
-  vec3 wineCol = uWine * 0.3 * (1.0 + 1.2 * (1.0 - wnv));
+  vec3 wineCol = uWine * 0.32 * (1.0 + 1.2 * (1.0 - wnv));
   diffuseColor.rgb = mix(diffuseColor.rgb, wineCol, wineMask * uWineAmt);`,
       )
       .replace(

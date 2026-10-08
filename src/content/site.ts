@@ -127,7 +127,7 @@ export const WINES: Wine[] = [
     label: "/labels/bruciata-label.webp",
     back: "/labels/bruciata-back.webp",
     capsule: "#1a1714",
-    liquid: "#5c0e22",
+    liquid: "#5c0a2e",
     tag: "#a50b33",
   },
   {
@@ -155,7 +155,7 @@ export const WINES: Wine[] = [
     label: "/labels/chiostro-label.webp",
     back: "/labels/chiostro-back.webp",
     capsule: "#8a2840",
-    liquid: "#6a1630",
+    liquid: "#6a0f41",
     tag: "#8a2840",
   },
   {
@@ -169,7 +169,7 @@ export const WINES: Wine[] = [
     label: "/labels/cabianca-label.webp",
     back: "/labels/cabianca-back.webp",
     capsule: "#571e36",
-    liquid: "#4e1030",
+    liquid: "#4e0b41",
     tag: "#571e36",
   },
   {
@@ -183,7 +183,7 @@ export const WINES: Wine[] = [
     label: "/labels/nonu-label.webp",
     back: "/labels/nonu-back.webp",
     capsule: "#151515",
-    liquid: "#52091f",
+    liquid: "#52062a",
     tag: "#2b2e36",
   },
   {
