@@ -47,7 +47,7 @@ export function Vini() {
           <Reveal>
             <p className="occhiello">I nostri vini</p>
           </Reveal>
-          <RevealLines as="h2" className="h2" lines={["Cinque vini,", "cinque storie"]} />
+          <RevealLines as="h2" className="h2" lines={["Cinque vini,", "e una novità in arrivo"]} />
         </header>
 
         <div className={styles.grid}>
@@ -72,10 +72,6 @@ export function Vini() {
                 </li>
               ))}
             </ul>
-            <p className={styles.soon}>
-              <b>In arrivo</b>
-              Presto, qualcosa di nuovo in cantina…
-            </p>
           </Reveal>
 
           {/* centro: a garrafa */}
@@ -104,28 +100,42 @@ export function Vini() {
               <p className="occhiello red">{wine.denom}</p>
               <h3 className={styles.title}>{wine.name}</h3>
               <p className={styles.text}>{wine.text}</p>
-              <dl className={styles.facts}>
-                {wine.grape && (
-                  <>
-                    <dt>Uva</dt>
-                    <dd>{wine.grape}</dd>
-                  </>
-                )}
-                <dt>Tipologia</dt>
-                <dd>{wine.type}</dd>
-                {wine.year && (
-                  <>
-                    <dt>Annata</dt>
-                    <dd>{wine.year}</dd>
-                  </>
-                )}
-              </dl>
-              <a
-                className={styles.sheet}
-                href={mailtoUrl(CONTACT.email, `Scheda tecnica — ${wine.name}`, `Buongiorno, vorrei ricevere la scheda tecnica di ${wine.name}.`)}
-              >
-                Richiedi la scheda tecnica
-              </a>
+              {!wine.soon && (
+                <dl className={styles.facts}>
+                  {wine.grape && (
+                    <>
+                      <dt>Uva</dt>
+                      <dd>{wine.grape}</dd>
+                    </>
+                  )}
+                  <dt>Tipologia</dt>
+                  <dd>{wine.type}</dd>
+                  {wine.year && (
+                    <>
+                      <dt>Annata</dt>
+                      <dd>{wine.year}</dd>
+                    </>
+                  )}
+                </dl>
+              )}
+              {wine.soon ? (
+                <a
+                  className="btn btn-primary"
+                  style={{ alignSelf: "flex-start", marginTop: 8 }}
+                  href={CONTACT.instagram ?? "#contatti"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Seguici su Instagram
+                </a>
+              ) : (
+                <a
+                  className={styles.sheet}
+                  href={mailtoUrl(CONTACT.email, `Scheda tecnica — ${wine.name}`, `Buongiorno, vorrei ricevere la scheda tecnica di ${wine.name}.`)}
+                >
+                  Richiedi la scheda tecnica
+                </a>
+              )}
             </div>
           </Reveal>
         </div>

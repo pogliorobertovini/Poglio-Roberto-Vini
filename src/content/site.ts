@@ -109,6 +109,8 @@ export type Wine = {
   liquid: string;
   /** cor da etiqueta (para o ponto na lista) */
   tag: string;
+  /** garrafa "novità in arrivo": sem uva/annata, com chamada para o Instagram */
+  soon?: boolean;
 };
 
 export const WINES: Wine[] = [
@@ -181,6 +183,22 @@ export const WINES: Wine[] = [
     capsule: "#151515",
     liquid: "#2a0710",
     tag: "#2b2e36",
+  },
+  {
+    // representa as duas novas etiquetas que estão por vir
+    id: "novita",
+    name: "Novità",
+    denom: "In arrivo",
+    grape: null,
+    type: "",
+    year: null,
+    text: "Due nuove etichette sono in arrivo dalla nostra cantina. Seguici su Instagram per scoprirle per primi.",
+    label: "/labels/novita-label.webp",
+    back: "/labels/novita-back.webp",
+    capsule: "#b8923f",
+    liquid: "#1c0a10",
+    tag: "#6e1423",
+    soon: true,
   },
 ];
 
