@@ -65,6 +65,8 @@ type Look = {
     clearcoat: number;
     clearcoatRoughness: number;
     envMapIntensity: number;
+    /** relevo do vidro soprado (ondulações e microimperfeições); 0 = vidro liso */
+    bump?: number;
   };
   cap: { metalness: number; roughness: number; clearcoat: number; envMapIntensity: number };
   bg: string;
@@ -79,7 +81,7 @@ export const VARIANTS: Record<BottleVariant, Look> = {
     shape: "antica",
     labelY: 10.4,
     backY: 10.0,
-    glass: { color: "#4a5826", tint: "#6d6b2c", tintAmt: 0.12, roughness: 0.14, transmission: 0.6, thickness: 2.6, attenuationColor: "#2a3410", attenuationDistance: 1.8, clearcoat: 0.5, clearcoatRoughness: 0.22, envMapIntensity: 0.85 },
+    glass: { color: "#66763a", tint: "#6d6b2c", tintAmt: 0.1, roughness: 0.3, transmission: 0.8, thickness: 2.2, attenuationColor: "#2a3410", attenuationDistance: 2.4, clearcoat: 0.15, clearcoatRoughness: 0.45, envMapIntensity: 0.55, bump: 1.6 },
     cap: { metalness: 0.35, roughness: 0.42, clearcoat: 0.2, envMapIntensity: 0.9 },
     bg: "#2c2620",
     lights: [
@@ -237,6 +239,50 @@ function tintShader(tint: string, amt: number) {
   };
 }
 
+/* ——— relevo do vidro: ondulações suaves + grão fino, gerado na hora (sem arquivo) ——— */
+function useGlassBump(enabled: boolean) {
+  return useMemo(() => {
+    if (!enabled) return null;
+    const S = 512;
+    const c = document.createElement("canvas");
+    c.width = c.height = S;
+    const g = c.getContext("2d")!;
+    g.fillStyle = "#808080";
+    g.fillRect(0, 0, S, S);
+    const rng = { s: 7 };
+    const rnd = () => {
+      rng.s = (rng.s * 16807) % 2147483647;
+      return rng.s / 2147483647;
+    };
+    // ondulações largas (como o vidro soprado)
+    for (let i = 0; i < 90; i++) {
+      const x = rnd() * S, y = rnd() * S, r = 30 + rnd() * 110;
+      const v = rnd() > 0.5 ? 255 : 0;
+      const grad = g.createRadialGradient(x, y, 0, x, y, r);
+      grad.addColorStop(0, `rgba(${v},${v},${v},0.10)`);
+      grad.addColorStop(1, `rgba(${v},${v},${v},0)`);
+      g.fillStyle = grad;
+      g.fillRect(x - r, y - r, r * 2, r * 2);
+    }
+    // estrias verticais finas
+    for (let i = 0; i < 60; i++) {
+      const x = rnd() * S;
+      g.fillStyle = `rgba(${rnd() > 0.5 ? 255 : 0},${rnd() > 0.5 ? 255 : 0},128,0.05)`;
+      g.fillRect(x, 0, 1 + rnd() * 2, S);
+    }
+    // grão fino
+    for (let i = 0; i < 9000; i++) {
+      const v = rnd() > 0.5 ? 255 : 0;
+      g.fillStyle = `rgba(${v},${v},${v},0.07)`;
+      g.fillRect(rnd() * S, rnd() * S, 1 + rnd() * 1.5, 1 + rnd() * 1.5);
+    }
+    const t = new THREE.CanvasTexture(c);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(3, 2);
+    return t;
+  }, [enabled]);
+}
+
 /* ——— sombra de contato (disco com gradiente radial) ——— */
 function useShadowTexture() {
   return useMemo(() => {
@@ -299,6 +345,7 @@ function Bottle({ wines, index, ctl, look }: { wines: Wine[]; index: number; ctl
     [wines],
   );
   const shadowTex = useShadowTexture();
+  const glassBump = useGlassBump(!!look.glass.bump);
   const onGlassCompile = useMemo(
     () => (look.glass.tint ? tintShader(look.glass.tint, look.glass.tintAmt ?? 0.5) : undefined),
     [look.glass.tint, look.glass.tintAmt],
@@ -358,7 +405,7 @@ function Bottle({ wines, index, ctl, look }: { wines: Wine[]; index: number; ctl
       <group ref={group}>
         {/* vinho */}
         <mesh geometry={liquidGeo}>
-          <meshStandardMaterial ref={liqMat} color={colors[0].liq} emissive={colors[0].liq} emissiveIntensity={0.55} roughness={0.25} side={THREE.DoubleSide} />
+          <meshStandardMaterial ref={liqMat} color={colors[0].liq} emissive={colors[0].liq} emissiveIntensity={1.7} roughness={0.25} side={THREE.DoubleSide} />
         </mesh>
 
         {/* vidro */}
@@ -376,6 +423,8 @@ function Bottle({ wines, index, ctl, look }: { wines: Wine[]; index: number; ctl
             clearcoatRoughness={look.glass.clearcoatRoughness}
             envMapIntensity={look.glass.envMapIntensity}
             side={look.glass.tint ? THREE.FrontSide : THREE.DoubleSide}
+            bumpMap={glassBump ?? undefined}
+            bumpScale={look.glass.bump ?? 0}
             onBeforeCompile={onGlassCompile}
             customProgramCacheKey={() => (look.glass.tint ? "tint" : "plain")}
           />
