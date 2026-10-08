@@ -1,0 +1,131 @@
+.footer {
+  background: var(--nero);
+  color: var(--carta);
+  padding: clamp(80px, 10vw, 130px) var(--pad-x) 40px;
+}
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(48px, 6vw, 80px);
+}
+.top {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: clamp(40px, 5vw, 72px);
+  align-items: start;
+}
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.h2 {
+  color: var(--carta);
+}
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.company {
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 1.35;
+}
+.list dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 24px;
+  color: var(--polvere);
+}
+.list dt {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding-top: 4px;
+}
+.list dd {
+  margin: 0;
+}
+.list a {
+  color: var(--carta);
+  border-bottom: 1px solid rgba(245, 240, 230, 0.3);
+}
+.list a:hover {
+  color: var(--oro);
+  border-color: var(--oro);
+}
+.tbd {
+  font-style: italic;
+  opacity: 0.6;
+}
+
+.trade {
+  border: 1px solid rgba(201, 164, 92, 0.5);
+  padding: clamp(26px, 3vw, 40px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+.trade h3 {
+  font-size: 26px;
+  line-height: 1.25;
+}
+.tradeP {
+  color: var(--polvere);
+  max-width: 46ch;
+}
+.trade :global(.btn) {
+  margin-top: 6px;
+}
+.trade :global(.btn-light:hover) {
+  background: var(--oro);
+}
+
+.bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  border-top: 1px solid rgba(245, 240, 230, 0.14);
+  padding-top: 36px;
+}
+.logo {
+  width: 190px;
+}
+.legal {
+  font-size: 13px;
+  color: var(--polvere);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: right;
+}
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  justify-content: flex-end;
+}
+.links a {
+  color: var(--polvere);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.links a:hover {
+  color: var(--oro);
+}
+
+@media (max-width: 600px) {
+  .legal {
+    text-align: left;
+  }
+  .links {
+    justify-content: flex-start;
+  }
+}

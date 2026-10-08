@@ -1,0 +1,123 @@
+.header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  height: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 clamp(18px, 4vw, 56px);
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition:
+    background 0.35s,
+    height 0.35s,
+    border-color 0.35s;
+}
+.solid {
+  height: 68px;
+  background: rgba(23, 19, 15, 0.97);
+  border-bottom-color: rgba(201, 164, 92, 0.25);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 2vw, 30px);
+}
+.link {
+  color: var(--carta);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.link:hover {
+  color: var(--oro);
+}
+.cta {
+  background: var(--rosso-barbera);
+  color: var(--carta);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 11px 18px;
+  border-radius: 2px;
+  transition: background 0.25s;
+}
+.cta:hover {
+  background: var(--rosso-brace);
+  color: var(--carta);
+}
+
+.burger {
+  display: none;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 2px;
+  border: 1px solid rgba(245, 240, 230, 0.4);
+  background: none;
+  color: var(--carta);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: var(--nero);
+  padding: 96px 28px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  animation: fade 0.25s ease;
+}
+.overlay a {
+  color: var(--carta);
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: 28px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(245, 240, 230, 0.12);
+}
+.overlay a.overlayCta {
+  margin-top: 28px;
+  background: var(--rosso-barbera);
+  font-family: var(--font-body);
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 16px;
+  border: 0;
+  border-radius: 2px;
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 1020px) {
+  .nav {
+    display: none;
+  }
+  .burger {
+    display: block;
+  }
+}

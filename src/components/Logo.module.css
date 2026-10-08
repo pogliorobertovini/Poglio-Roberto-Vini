@@ -1,0 +1,42 @@
+.horizontal {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  height: 100%;
+  white-space: nowrap;
+}
+.horizontal img {
+  height: 40px;
+  width: auto;
+  flex: none;
+}
+.name {
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: 19px;
+  letter-spacing: 0.16em;
+  color: var(--carta);
+  line-height: 1;
+}
+.name b {
+  font-weight: 600;
+  color: var(--oro);
+}
+.full {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.symbol {
+  display: block;
+  height: 100%;
+  width: auto;
+}
+@media (max-width: 1020px) {
+  .horizontal img {
+    height: 34px;
+  }
+  .name {
+    font-size: 16px;
+  }
+}

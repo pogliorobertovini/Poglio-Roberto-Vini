@@ -1,0 +1,68 @@
+.section {
+  background: var(--nero);
+  color: var(--carta);
+}
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(40px, 6vw, 72px);
+}
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 680px;
+}
+.h2 {
+  color: var(--carta);
+}
+.cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: clamp(28px, 3vw, 40px);
+}
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.photo {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  background: #2a241e;
+}
+.photo img {
+  transition: transform 0.9s var(--ease);
+}
+.step:hover .photo img {
+  transform: scale(1.05);
+}
+.label {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  border-top: 1px solid rgba(201, 164, 92, 0.35);
+  padding-top: 16px;
+}
+.n {
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--oro);
+  min-width: 1.6em;
+}
+.label h3 {
+  font-size: 24px;
+  line-height: 1.2;
+  color: var(--carta);
+}
+.step p {
+  color: var(--polvere);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .photo img {
+    transition: none;
+  }
+}

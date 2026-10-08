@@ -1,0 +1,45 @@
+.section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  background: var(--rosso-barbera);
+  color: var(--carta);
+}
+.photo {
+  position: relative;
+  min-height: 380px;
+  background: #2a241e;
+}
+.text {
+  padding: clamp(56px, 8vw, 120px) var(--pad-x);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 22px;
+}
+.text :global(.h2) {
+  color: var(--carta);
+}
+.occ {
+  color: #e9c9a0 !important;
+}
+.p {
+  max-width: 44ch;
+  color: #f1e4da;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+/* sobre o vermelho, o botão claro leva o texto vinho */
+.actions :global(.btn-light) {
+  color: var(--rosso-barbera);
+}
+.actions :global(.btn-ghost) {
+  border-color: rgba(245, 240, 230, 0.7);
+}
+.actions :global(.btn-ghost:hover) {
+  border-color: #fff;
+  color: #fff;
+}

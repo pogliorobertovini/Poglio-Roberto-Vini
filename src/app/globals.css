@@ -1,0 +1,213 @@
+/* Poglio Roberto — tokens e base. Fonte de verdade: IDENTITA.md */
+:root {
+  --carta: #f5f0e6;
+  --tufo: #eae2d3;
+  --nero: #17130f;
+  --inchiostro: #1e1a16;
+  --terra: #5e554b;
+  --polvere: #b5aa9a;
+  --rosso-barbera: #6e1423;
+  --rosso-brace: #a8213a;
+  --oro: #c9a45c;
+  --oro-antico: #85642b;
+  --filo: #cfc3ae;
+
+  --font-title: var(--font-cinzel), "Cinzel", serif;
+  --font-body: var(--font-hanken), "Hanken Grotesk", system-ui, sans-serif;
+
+  --pad-x: clamp(20px, 5vw, 72px);
+  --pad-y: clamp(80px, 11vw, 150px);
+  --maxw: 1200px;
+  --header-h: 84px;
+  --ease: cubic-bezier(0.2, 0.6, 0.3, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 72px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--carta);
+  color: var(--inchiostro);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img {
+  max-width: 100%;
+}
+
+a {
+  color: var(--rosso-brace);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--rosso-barbera);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-family: var(--font-title);
+  font-weight: 600;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+::selection {
+  background: var(--rosso-barbera);
+  color: var(--carta);
+}
+
+:focus-visible {
+  outline: 2px solid var(--rosso-brace);
+  outline-offset: 3px;
+}
+
+/* ——— Tipografia ——— */
+.occhiello {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--oro-antico);
+}
+.on-dark .occhiello,
+.occhiello.gold {
+  color: var(--oro);
+}
+.occhiello.red {
+  color: var(--rosso-barbera);
+}
+
+.h2 {
+  font-size: clamp(32px, 4vw, 52px);
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+/* ——— Layout ——— */
+.section {
+  padding: var(--pad-y) var(--pad-x);
+}
+.container {
+  max-width: var(--maxw);
+  margin: 0 auto;
+}
+
+/* ——— Botões ——— */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 16px 24px;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 0.25s,
+    color 0.25s,
+    border-color 0.25s;
+}
+.btn-primary {
+  background: var(--rosso-barbera);
+  color: var(--carta);
+}
+.btn-primary:hover {
+  background: var(--rosso-brace);
+  color: var(--carta);
+}
+.btn-light {
+  background: var(--carta);
+  color: var(--nero);
+}
+.btn-light:hover {
+  background: #fff;
+  color: var(--nero);
+}
+.btn-ghost {
+  border-color: rgba(245, 240, 230, 0.6);
+  color: var(--carta);
+}
+.btn-ghost:hover {
+  border-color: var(--oro);
+  color: var(--oro);
+}
+
+/* ——— Animações de entrada ——— */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.9s var(--ease),
+    transform 0.9s var(--ease);
+  transition-delay: var(--d, 0s);
+}
+.reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* títulos que entram linha por linha */
+.line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.line > span {
+  display: block;
+  transform: translateY(105%);
+  transition: transform 1s var(--ease);
+  transition-delay: var(--d, 0s);
+}
+.in .line > span,
+.line.in > span {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal,
+  .line > span {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
