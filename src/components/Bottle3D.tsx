@@ -2,10 +2,11 @@
 
 /**
  * Garrafa 3D de vidro verde, com os rótulos reais.
- * - Vidro: LatheGeometry (perfil Bordeaux) + MeshPhysicalMaterial, iluminado por um ambiente
+ * - Vidro: LatheGeometry (perfil Bordeaux ou Albeisa) + MeshPhysicalMaterial, iluminado por um ambiente
  *   procedural de "softboxes" (nenhum arquivo HDR externo).
- * - Rótulo: segmento de cilindro com a textura (rótulo + etiqueta, fundo transparente).
+ * - Rótulo: segmento de cilindro com a textura (rótulo + etiqueta, fundo transparente); contrarrótulo nas costas.
  * - Interação: arrastar gira a garrafa; ao trocar de vinho ela dá uma volta e o rótulo troca de costas.
+ * - `variant` escolhe o visual (vidro/luz/formato). Veja VARIANTS e a página /garrafe.
  */
 
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -38,21 +39,123 @@ export class BottleControl {
 const TAU = Math.PI * 2;
 const LABEL_ASPECT = 1100 / 1400; // largura / altura das texturas em /public/labels
 const LABEL_H = 12.6;
-const LABEL_R = 3.835;
 const LABEL_Y = 11.2; // centro do rótulo na garrafa (cm)
 const BACK_ASPECT = 0.857; // contrarrótulo 60x70 mm
 const BACK_H = 7.35;
 const BACK_Y = 10.8;
 
+/* ——— variantes visuais ——— */
+export type BottleVariant = "classica" | "satinata" | "morbida" | "albeisa";
+
+type Light = { i: number; c: string; p: [number, number, number]; s: [number, number, number] };
+type Look = {
+  shape: "bordeaux" | "albeisa";
+  glass: {
+    color: string;
+    roughness: number;
+    transmission: number;
+    thickness: number;
+    attenuationColor: string;
+    attenuationDistance: number;
+    clearcoat: number;
+    clearcoatRoughness: number;
+    envMapIntensity: number;
+  };
+  cap: { metalness: number; roughness: number; clearcoat: number; envMapIntensity: number };
+  bg: string;
+  lights: Light[];
+  key: number;
+  fill: number;
+};
+
+export const VARIANTS: Record<BottleVariant, Look> = {
+  // a atual: vidro brilhante, reflexos fortes
+  classica: {
+    shape: "bordeaux",
+    glass: { color: "#1c4d2c", roughness: 0.04, transmission: 0.82, thickness: 2.6, attenuationColor: "#0e5a2a", attenuationDistance: 2.2, clearcoat: 1, clearcoatRoughness: 0.02, envMapIntensity: 1.5 },
+    cap: { metalness: 0.55, roughness: 0.28, clearcoat: 0.6, envMapIntensity: 1.2 },
+    bg: "#241f1a",
+    lights: [
+      { i: 14, c: "#fff3e2", p: [-9, 5, 7], s: [2.4, 24, 1] },
+      { i: 10, c: "#fff3e2", p: [10, 4, 6], s: [1.6, 24, 1] },
+      { i: 3.2, c: "#ffffff", p: [0, 15, 3], s: [16, 7, 1] },
+      { i: 1, c: "#ffd9b0", p: [0, -2, 11], s: [22, 3, 1] },
+      { i: 5, c: "#fff6ea", p: [0, 4, -11], s: [18, 14, 1] },
+    ],
+    key: 1.5,
+    fill: 0.45,
+  },
+  // vidro verde escuro fosco/acetinado: sem brilho forte, luz difusa
+  satinata: {
+    shape: "bordeaux",
+    glass: { color: "#143019", roughness: 0.34, transmission: 0, thickness: 0, attenuationColor: "#0e5a2a", attenuationDistance: 2, clearcoat: 0.35, clearcoatRoughness: 0.4, envMapIntensity: 0.85 },
+    cap: { metalness: 0.3, roughness: 0.5, clearcoat: 0.1, envMapIntensity: 0.8 },
+    bg: "#2c2620",
+    lights: [
+      { i: 3.2, c: "#fff3e2", p: [-9, 5, 7], s: [8, 26, 1] },
+      { i: 2.2, c: "#fff3e2", p: [10, 4, 6], s: [6, 26, 1] },
+      { i: 2, c: "#ffffff", p: [0, 15, 3], s: [18, 9, 1] },
+      { i: 0.6, c: "#ffd9b0", p: [0, -2, 11], s: [22, 3, 1] },
+      { i: 2.5, c: "#fff6ea", p: [0, 4, -11], s: [18, 14, 1] },
+    ],
+    key: 1.1,
+    fill: 0.5,
+  },
+  // vidro verde antigo translúcido, luz suave e ampla: dá para ver o vinho por dentro
+  morbida: {
+    shape: "bordeaux",
+    glass: { color: "#9cc48a", roughness: 0.2, transmission: 0.93, thickness: 3.2, attenuationColor: "#3f7a2a", attenuationDistance: 2.4, clearcoat: 0.15, clearcoatRoughness: 0.35, envMapIntensity: 0.6 },
+    cap: { metalness: 0.35, roughness: 0.42, clearcoat: 0.2, envMapIntensity: 0.9 },
+    bg: "#3a332b",
+    lights: [
+      { i: 2.6, c: "#fff6ea", p: [-9, 6, 8], s: [10, 28, 1] },
+      { i: 1.6, c: "#fff6ea", p: [10, 4, 6], s: [7, 26, 1] },
+      { i: 2.2, c: "#ffffff", p: [0, 15, 3], s: [20, 10, 1] },
+      { i: 0.8, c: "#ffd9b0", p: [0, -2, 11], s: [22, 3, 1] },
+      { i: 4, c: "#fff6ea", p: [0, 4, -11], s: [22, 18, 1] },
+    ],
+    key: 1.1,
+    fill: 0.5,
+  },
+  // formato "albeisa" (a garrafa tradicional do Piemonte): ombros em declive, vidro pesado, verde-oliva acetinado
+  albeisa: {
+    shape: "albeisa",
+    glass: { color: "#1d3a20", roughness: 0.3, transmission: 0, thickness: 0, attenuationColor: "#1b4a1f", attenuationDistance: 2, clearcoat: 0.4, clearcoatRoughness: 0.35, envMapIntensity: 0.9 },
+    cap: { metalness: 0.4, roughness: 0.38, clearcoat: 0.25, envMapIntensity: 0.9 },
+    bg: "#2c2620",
+    lights: [
+      { i: 4.5, c: "#fff3e2", p: [-9, 5, 7], s: [6, 26, 1] },
+      { i: 3, c: "#fff3e2", p: [10, 4, 6], s: [4, 26, 1] },
+      { i: 2.4, c: "#ffffff", p: [0, 15, 3], s: [18, 8, 1] },
+      { i: 0.7, c: "#ffd9b0", p: [0, -2, 11], s: [22, 3, 1] },
+      { i: 3, c: "#fff6ea", p: [0, 4, -11], s: [18, 14, 1] },
+    ],
+    key: 1.2,
+    fill: 0.5,
+  },
+};
+
 /* ——— geometria (unidades em cm; garrafa com 30 cm) ——— */
-function glassProfile() {
+function bodyRadius(shape: Look["shape"]) {
+  return shape === "albeisa" ? 3.95 : 3.82;
+}
+
+function glassProfile(shape: Look["shape"]) {
   const v = (x: number, y: number) => new THREE.Vector2(x, y);
   const path = new THREE.CurvePath<THREE.Vector2>();
-  path.add(new THREE.CubicBezierCurve(v(0, 1.7), v(1.4, 1.7), v(2.4, 1.0), v(3.1, 0.2))); // fundo com "punt"
-  path.add(new THREE.CubicBezierCurve(v(3.1, 0.2), v(3.3, 0.0), v(3.75, 0.0), v(3.82, 0.9))); // calcanhar
-  path.add(new THREE.LineCurve(v(3.82, 0.9), v(3.82, 18.3))); // corpo
-  path.add(new THREE.CubicBezierCurve(v(3.82, 18.3), v(3.82, 20.2), v(3.6, 21.2), v(2.9, 22.9))); // ombro
-  path.add(new THREE.CubicBezierCurve(v(2.9, 22.9), v(2.48, 23.92), v(1.5, 24.1), v(1.5, 25.2))); // pescoço
+  if (shape === "albeisa") {
+    path.add(new THREE.CubicBezierCurve(v(0, 2.2), v(1.4, 2.2), v(2.5, 1.4), v(3.2, 0.3))); // fundo, punt fundo
+    path.add(new THREE.CubicBezierCurve(v(3.2, 0.3), v(3.4, 0.0), v(3.9, 0.0), v(3.95, 1.0))); // calcanhar
+    path.add(new THREE.LineCurve(v(3.95, 1.0), v(3.95, 17.6))); // corpo
+    path.add(new THREE.CubicBezierCurve(v(3.95, 17.6), v(3.95, 20.6), v(2.7, 22.0), v(1.95, 23.5))); // ombro em declive
+    path.add(new THREE.CubicBezierCurve(v(1.95, 23.5), v(1.7, 24.2), v(1.5, 24.4), v(1.5, 25.2))); // pescoço
+  } else {
+    path.add(new THREE.CubicBezierCurve(v(0, 1.7), v(1.4, 1.7), v(2.4, 1.0), v(3.1, 0.2))); // fundo com "punt"
+    path.add(new THREE.CubicBezierCurve(v(3.1, 0.2), v(3.3, 0.0), v(3.75, 0.0), v(3.82, 0.9))); // calcanhar
+    path.add(new THREE.LineCurve(v(3.82, 0.9), v(3.82, 18.3))); // corpo
+    path.add(new THREE.CubicBezierCurve(v(3.82, 18.3), v(3.82, 20.2), v(3.6, 21.2), v(2.9, 22.9))); // ombro
+    path.add(new THREE.CubicBezierCurve(v(2.9, 22.9), v(2.48, 23.92), v(1.5, 24.1), v(1.5, 25.2))); // pescoço
+  }
   path.add(new THREE.LineCurve(v(1.5, 25.2), v(1.46, 28.4)));
   path.add(new THREE.LineCurve(v(1.46, 28.4), v(1.7, 28.7))); // anel da boca
   path.add(new THREE.LineCurve(v(1.7, 28.7), v(1.7, 29.8)));
@@ -90,7 +193,7 @@ function useShadowTexture() {
 
 const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
-function Bottle({ wines, index, ctl }: { wines: Wine[]; index: number; ctl: BottleControl }) {
+function Bottle({ wines, index, ctl, look }: { wines: Wine[]; index: number; ctl: BottleControl; look: Look }) {
   const textures = useTexture([...wines.map((w) => w.label), ...wines.map((w) => w.back)], (t) => {
     (Array.isArray(t) ? t : [t]).forEach((tex) => {
       tex.colorSpace = THREE.SRGBColorSpace;
@@ -116,17 +219,18 @@ function Bottle({ wines, index, ctl }: { wines: Wine[]; index: number; ctl: Bott
   });
 
   const { glassGeo, liquidGeo, capsuleGeo, labelGeo, backGeo } = useMemo(() => {
-    const prof = glassProfile();
-    const arc = (LABEL_H * LABEL_ASPECT) / LABEL_R;
-    const backArc = (BACK_H * BACK_ASPECT) / LABEL_R;
+    const prof = glassProfile(look.shape);
+    const R = bodyRadius(look.shape) + 0.015; // o rótulo assenta sobre o corpo
+    const arc = (LABEL_H * LABEL_ASPECT) / R;
+    const backArc = (BACK_H * BACK_ASPECT) / R;
     return {
       glassGeo: new THREE.LatheGeometry(prof, 128),
       liquidGeo: new THREE.LatheGeometry(liquidProfile(prof), 96),
       capsuleGeo: new THREE.LatheGeometry(CAPSULE, 96),
-      labelGeo: new THREE.CylinderGeometry(LABEL_R, LABEL_R, LABEL_H, 96, 1, true, -arc / 2, arc),
-      backGeo: new THREE.CylinderGeometry(LABEL_R, LABEL_R, BACK_H, 64, 1, true, Math.PI - backArc / 2, backArc),
+      labelGeo: new THREE.CylinderGeometry(R, R, LABEL_H, 96, 1, true, -arc / 2, arc),
+      backGeo: new THREE.CylinderGeometry(R, R, BACK_H, 64, 1, true, Math.PI - backArc / 2, backArc),
     };
-  }, []);
+  }, [look.shape]);
 
   const colors = useMemo(
     () => wines.map((w) => ({ cap: new THREE.Color(w.capsule), liq: new THREE.Color(w.liquid) })),
@@ -193,18 +297,17 @@ function Bottle({ wines, index, ctl }: { wines: Wine[]; index: number; ctl: Bott
         {/* vidro */}
         <mesh geometry={glassGeo}>
           <meshPhysicalMaterial
-            color="#1c4d2c"
-            roughness={0.04}
+            color={look.glass.color}
+            roughness={look.glass.roughness}
             metalness={0}
-            transmission={0.82}
-            thickness={2.6}
+            transmission={look.glass.transmission}
+            thickness={look.glass.thickness}
             ior={1.5}
-            attenuationColor="#0e5a2a"
-            attenuationDistance={2.2}
-            clearcoat={1}
-            clearcoatRoughness={0.02}
-            specularIntensity={1}
-            envMapIntensity={1.5}
+            attenuationColor={look.glass.attenuationColor}
+            attenuationDistance={look.glass.attenuationDistance}
+            clearcoat={look.glass.clearcoat}
+            clearcoatRoughness={look.glass.clearcoatRoughness}
+            envMapIntensity={look.glass.envMapIntensity}
             side={THREE.DoubleSide}
           />
         </mesh>
@@ -214,11 +317,11 @@ function Bottle({ wines, index, ctl }: { wines: Wine[]; index: number; ctl: Bott
           <meshPhysicalMaterial
             ref={capMat}
             color={colors[0].cap}
-            metalness={0.55}
-            roughness={0.28}
-            clearcoat={0.6}
-            clearcoatRoughness={0.15}
-            envMapIntensity={1.2}
+            metalness={look.cap.metalness}
+            roughness={look.cap.roughness}
+            clearcoat={look.cap.clearcoat}
+            clearcoatRoughness={0.2}
+            envMapIntensity={look.cap.envMapIntensity}
             side={THREE.DoubleSide}
           />
         </mesh>
@@ -284,12 +387,15 @@ export default function Bottle3D({
   index,
   active,
   fallback,
+  variant = "classica",
 }: {
   wines: Wine[];
   index: number;
   active: boolean;
   fallback: ReactNode;
+  variant?: BottleVariant;
 }) {
+  const look = VARIANTS[variant];
   const [ctl] = useState(() => new BottleControl());
   const lastX = useRef(0);
   const [ready, setReady] = useState(false);
@@ -333,17 +439,15 @@ export default function Bottle3D({
           onCreated={({ camera }) => camera.lookAt(0, 14.6, 0)}
         >
           <Suspense fallback={null}>
-            <Environment resolution={256} frames={1}>
-              <color attach="background" args={["#241f1a"]} />
-              <Lightformer form="rect" intensity={14} color="#fff3e2" position={[-9, 5, 7]} scale={[2.4, 24, 1]} />
-              <Lightformer form="rect" intensity={10} color="#fff3e2" position={[10, 4, 6]} scale={[1.6, 24, 1]} />
-              <Lightformer form="rect" intensity={3.2} color="#ffffff" position={[0, 15, 3]} scale={[16, 7, 1]} />
-              <Lightformer form="rect" intensity={1.0} color="#ffd9b0" position={[0, -2, 11]} scale={[22, 3, 1]} />
-              <Lightformer form="rect" intensity={5} color="#fff6ea" position={[0, 4, -11]} scale={[18, 14, 1]} />
+            <Environment key={`env-${variant}`} resolution={256} frames={1}>
+              <color attach="background" args={[look.bg]} />
+              {look.lights.map((l, i) => (
+                <Lightformer key={i} form="rect" intensity={l.i} color={l.c} position={l.p} scale={l.s} />
+              ))}
             </Environment>
-            <directionalLight position={[-14, 22, 36]} intensity={1.5} color="#fff2e0" />
-            <directionalLight position={[16, 8, 30]} intensity={0.45} color="#ffe9d0" />
-            <Bottle wines={wines} index={index} ctl={ctl} />
+            <directionalLight position={[-14, 22, 36]} intensity={look.key} color="#fff2e0" />
+            <directionalLight position={[16, 8, 30]} intensity={look.fill} color="#ffe9d0" />
+            <Bottle key={`bottle-${variant}`} wines={wines} index={index} ctl={ctl} look={look} />
             <Ready onReady={() => setReady(true)} />
           </Suspense>
         </Canvas>
