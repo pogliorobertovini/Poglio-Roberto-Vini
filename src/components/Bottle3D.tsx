@@ -40,6 +40,9 @@ const LABEL_ASPECT = 1100 / 1400; // largura / altura das texturas em /public/la
 const LABEL_H = 12.6;
 const LABEL_R = 3.835;
 const LABEL_Y = 11.2; // centro do rótulo na garrafa (cm)
+const BACK_ASPECT = 0.857; // contrarrótulo 60x70 mm
+const BACK_H = 7.35;
+const BACK_Y = 10.8;
 
 /* ——— geometria (unidades em cm; garrafa com 30 cm) ——— */
 function glassProfile() {
@@ -88,7 +91,7 @@ function useShadowTexture() {
 const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
 function Bottle({ wines, index, ctl }: { wines: Wine[]; index: number; ctl: BottleControl }) {
-  const textures = useTexture(wines.map((w) => w.label), (t) => {
+  const textures = useTexture([...wines.map((w) => w.label), ...wines.map((w) => w.back)], (t) => {
     (Array.isArray(t) ? t : [t]).forEach((tex) => {
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.anisotropy = 8;
@@ -112,14 +115,16 @@ function Bottle({ wines, index, ctl }: { wines: Wine[]; index: number; ctl: Bott
     spin: null as null | { t0: number; dir: number; to: number; swapped: boolean },
   });
 
-  const { glassGeo, liquidGeo, capsuleGeo, labelGeo } = useMemo(() => {
+  const { glassGeo, liquidGeo, capsuleGeo, labelGeo, backGeo } = useMemo(() => {
     const prof = glassProfile();
     const arc = (LABEL_H * LABEL_ASPECT) / LABEL_R;
+    const backArc = (BACK_H * BACK_ASPECT) / LABEL_R;
     return {
       glassGeo: new THREE.LatheGeometry(prof, 128),
       liquidGeo: new THREE.LatheGeometry(liquidProfile(prof), 96),
       capsuleGeo: new THREE.LatheGeometry(CAPSULE, 96),
       labelGeo: new THREE.CylinderGeometry(LABEL_R, LABEL_R, LABEL_H, 96, 1, true, -arc / 2, arc),
+      backGeo: new THREE.CylinderGeometry(LABEL_R, LABEL_R, BACK_H, 64, 1, true, Math.PI - backArc / 2, backArc),
     };
   }, []);
 
@@ -230,6 +235,19 @@ function Bottle({ wines, index, ctl }: { wines: Wine[]; index: number; ctl: Bott
             emissiveIntensity={0.18}
             alphaTest={0.5}
             alphaToCoverage
+          />
+        </mesh>
+
+        {/* contrarrótulo (nas costas) */}
+        <mesh geometry={backGeo} position={[0, BACK_Y, 0]}>
+          <meshStandardMaterial
+            map={textures[wines.length + shown]}
+            roughness={0.8}
+            metalness={0.02}
+            envMapIntensity={0.6}
+            emissive="#ffffff"
+            emissiveMap={textures[wines.length + shown]}
+            emissiveIntensity={0.18}
           />
         </mesh>
       </group>

@@ -101,6 +101,8 @@ export type Wine = {
   text: string;
   /** textura da garrafa 3D: rótulo + etiqueta, fundo transparente */
   label: string;
+  /** contrarrótulo (costas da garrafa) */
+  back: string;
   /** cor da cápsula */
   capsule: string;
   /** cor do vinho dentro da garrafa */
@@ -116,25 +118,27 @@ export const WINES: Wine[] = [
     denom: "Barbera d'Asti DOCG",
     grape: "Barbera",
     type: "Rosso",
-    year: "2023",
+    year: "2020", // TODO: confirmar a annata (o rótulo de prova diz 2020; a foto antiga dizia 2023)
     text: "Il vino che porta il nome della collina. Barbera d'Asti dalle vigne ad anfiteatro di Castelnuovo Calcea.",
     label: "/labels/bruciata-label.webp",
+    back: "/labels/bruciata-back.webp",
     capsule: "#1a1714",
     liquid: "#2a0710",
-    tag: "#a8213a",
+    tag: "#a50b33",
   },
   {
     id: "il-frutteto",
     name: "Il Frutteto",
-    denom: "Vino Bianco",
-    grape: null, // TODO: confermare l'uva
+    denom: "Cortese dell'Alto Monferrato DOC",
+    grape: "Cortese",
     type: "Bianco",
-    year: null,
+    year: "2020", // TODO: confirmar a annata
     text: "Il nostro bianco, fresco e diretto, da bere giovane.",
     label: "/labels/frutteto-label.webp",
+    back: "/labels/frutteto-back.webp",
     capsule: "#c9c6be",
     liquid: "#b9a24a",
-    tag: "#2f5a34",
+    tag: "#3f5e1e",
   },
   {
     id: "il-chiostro",
@@ -142,25 +146,27 @@ export const WINES: Wine[] = [
     denom: "Grignolino d'Asti DOC",
     grape: "Grignolino",
     type: "Rosso",
-    year: "2023",
+    year: "2020", // TODO: confirmar a annata
     text: "Grignolino d'Asti: il rosso chiaro e vivace della tradizione astigiana.",
     label: "/labels/chiostro-label.webp",
-    capsule: "#8a2045",
+    back: "/labels/chiostro-back.webp",
+    capsule: "#8a2840",
     liquid: "#5a1424",
-    tag: "#8a2045",
+    tag: "#8a2840",
   },
   {
-    id: "anfiteatro",
-    name: "Anfiteatro",
+    id: "ca-bianca",
+    name: "Ca' Bianca",
     denom: "Monferrato DOC Nebbiolo",
     grape: "Nebbiolo",
     type: "Rosso",
-    year: "2022",
-    text: "Nebbiolo del Monferrato, chiamato come la forma della nostra collina.",
-    label: "/labels/anfiteatro-label.webp",
-    capsule: "#5e1530",
+    year: "2020", // TODO: confirmar nome (antes era "Anfiteatro") e annata
+    text: "Nebbiolo del Monferrato, dalla nostra collina di Castelnuovo Calcea.",
+    label: "/labels/cabianca-label.webp",
+    back: "/labels/cabianca-back.webp",
+    capsule: "#571e36",
     liquid: "#3a0c1a",
-    tag: "#5e1530",
+    tag: "#571e36",
   },
   {
     id: "nonu-vanin",
@@ -171,9 +177,10 @@ export const WINES: Wine[] = [
     year: "2023",
     text: "Dedicato al nonno Vanin: una Barbera del Piemonte di tutti i giorni.",
     label: "/labels/nonu-label.webp",
+    back: "/labels/nonu-back.webp",
     capsule: "#151515",
     liquid: "#2a0710",
-    tag: "#151515",
+    tag: "#2b2e36",
   },
 ];
 

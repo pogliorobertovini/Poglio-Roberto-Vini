@@ -31,7 +31,7 @@ Referências do design em `docs/branding/` (identidade e wireframe).
 - [ ] **Contatos**: endereço, telefone, WhatsApp (só dígitos com DDI), e-mail, e-mail para importadores, Instagram, P. IVA → `CONTACT` em `site.ts`. Enquanto vazios, o site mostra "da inserire" e os botões abrem WhatsApp/e-mail em branco.
 - [ ] **Uva do Il Frutteto** (`grape: null`) — a linha "Uva" fica escondida até confirmar.
 - [ ] **Fotos definitivas**: foto antiga da família (história), foto da terra com gesso (território), fotos de vendemmia/cantina em melhor enquadramento.
-- [ ] **Rótulos em alta resolução**: hoje vêm de fotos sobre papelão (recortadas e com perspectiva corrigida). Quando houver os arquivos de arte, substituir `public/labels/*-label.webp` (1100×1400, fundo transparente fora do rótulo e da etiqueta).
+- [ ] **Conferir os rótulos novos**: nome "Ca' Bianca" (antes "Anfiteatro") e annate (os PDFs de prova dizem 2020; Nonu Vanin 2023).
 - [ ] **Mapa**: o SVG usa as regiões da ISTAT; conferir os limites do Piemonte na versão final.
 - [ ] **Privacy e Cookie**: textos legais em `src/app/privacy` e `src/app/cookie` (hoje placeholders). O site ainda não usa cookies nem analytics.
 - [ ] Logo: redesenhada com "POGLIO ROBERTO" (Cornice). Validar com o cliente; exportar versões finais em SVG com o texto em curvas.
@@ -44,4 +44,5 @@ Referências do design em `docs/branding/` (identidade e wireframe).
 Geram os arquivos de `public/` a partir das fotos originais (caminhos da pasta *Downloads/Poderi La Bruciata branding — nome da pasta antiga*):
 
 - `node scripts/photos.mjs` — otimiza as fotos para webp.
-- `node scripts/labels.mjs` — recorta os rótulos das fotos (corrige a perspectiva) e monta a textura da garrafa (rótulo + etiqueta sobreposta, fundo transparente).
+- `node scripts/labels-pdf.mjs` — **atual**: gera as texturas das garrafas (frente + etiqueta, e contrarrótulo) a partir dos PDFs de prova da gráfica. Exige os PDFs renderizados em PNG (escala 6) numa pasta indicada em `PDF_PNG_DIR`.
+- `node scripts/labels.mjs` — (antigo, a partir das fotos sobre papelão) recorta os rótulos das fotos (corrige a perspectiva) e monta a textura da garrafa (rótulo + etiqueta sobreposta, fundo transparente).
