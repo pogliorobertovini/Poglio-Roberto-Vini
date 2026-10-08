@@ -79,7 +79,7 @@ export const VARIANTS: Record<BottleVariant, Look> = {
     shape: "antica",
     labelY: 10.4,
     backY: 10.0,
-    glass: { color: "#d3dba3", tint: "#76742f", tintAmt: 0.08, roughness: 0.12, transmission: 0.92, thickness: 2.4, attenuationColor: "#56661f", attenuationDistance: 5.5, clearcoat: 0.5, clearcoatRoughness: 0.22, envMapIntensity: 0.85 },
+    glass: { color: "#4a5826", tint: "#6d6b2c", tintAmt: 0.12, roughness: 0.14, transmission: 0.6, thickness: 2.6, attenuationColor: "#2a3410", attenuationDistance: 1.8, clearcoat: 0.5, clearcoatRoughness: 0.22, envMapIntensity: 0.85 },
     cap: { metalness: 0.35, roughness: 0.42, clearcoat: 0.2, envMapIntensity: 0.9 },
     bg: "#2c2620",
     lights: [
@@ -358,7 +358,7 @@ function Bottle({ wines, index, ctl, look }: { wines: Wine[]; index: number; ctl
       <group ref={group}>
         {/* vinho */}
         <mesh geometry={liquidGeo}>
-          <meshStandardMaterial ref={liqMat} color={colors[0].liq} emissive={colors[0].liq} emissiveIntensity={1.7} roughness={0.2} side={THREE.DoubleSide} />
+          <meshStandardMaterial ref={liqMat} color={colors[0].liq} emissive={colors[0].liq} emissiveIntensity={0.55} roughness={0.25} side={THREE.DoubleSide} />
         </mesh>
 
         {/* vidro */}
