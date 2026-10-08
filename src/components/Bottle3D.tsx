@@ -67,6 +67,8 @@ type Look = {
     envMapIntensity: number;
     /** relevo do vidro soprado (ondulações e microimperfeições); 0 = vidro liso */
     bump?: number;
+    /** quanto o vidro "veste" a cor do vinho abaixo da linha do líquido (0–1) */
+    wineAmt?: number;
   };
   cap: { metalness: number; roughness: number; clearcoat: number; envMapIntensity: number };
   bg: string;
@@ -81,7 +83,7 @@ export const VARIANTS: Record<BottleVariant, Look> = {
     shape: "antica",
     labelY: 10.4,
     backY: 10.0,
-    glass: { color: "#66763a", tint: "#6d6b2c", tintAmt: 0.1, roughness: 0.3, transmission: 0.8, thickness: 2.2, attenuationColor: "#2a3410", attenuationDistance: 2.4, clearcoat: 0.15, clearcoatRoughness: 0.45, envMapIntensity: 0.55, bump: 1.6 },
+    glass: { color: "#66763a", tint: "#6d6b2c", tintAmt: 0.1, roughness: 0.3, transmission: 0.35, thickness: 2.2, attenuationColor: "#2a3410", attenuationDistance: 2.4, clearcoat: 0.15, clearcoatRoughness: 0.45, envMapIntensity: 0.55, bump: 1.6, wineAmt: 0.88 },
     cap: { metalness: 0.35, roughness: 0.42, clearcoat: 0.2, envMapIntensity: 0.9 },
     bg: "#2c2620",
     lights: [
@@ -225,16 +227,44 @@ function capsuleProfile(shape: Look["shape"]) {
 }
 
 /** vidro com "luz de dentro": o centro fica mais claro e as bordas escuras, como o verde antigo na foto */
-function tintShader(tint: string, amt: number) {
-  const uniforms = { uTint: { value: new THREE.Color(tint) }, uAmt: { value: amt } };
-  return (shader: { uniforms: Record<string, unknown>; fragmentShader: string }) => {
-    shader.uniforms.uTint = uniforms.uTint;
-    shader.uniforms.uAmt = uniforms.uAmt;
+/**
+ * Também pinta o vidro com a cor do vinho abaixo da linha do líquido (`level`), com a borda do vidro
+ * mais intensa e um leve realce no menisco. Funciona mesmo com o vidro fosco, onde a transparência real
+ * quase não deixaria ver o vinho. `wine` é atualizado a cada frame quando o vinho muda.
+ */
+function tintShader(tint: string, amt: number, wine: THREE.Color, level: number, wineAmt: number) {
+  const uniforms = {
+    uTint: { value: new THREE.Color(tint) },
+    uAmt: { value: amt },
+    uWine: { value: wine },
+    uLevel: { value: level },
+    uWineAmt: { value: wineAmt },
+  };
+  return (shader: { uniforms: Record<string, unknown>; vertexShader: string; fragmentShader: string }) => {
+    Object.assign(shader.uniforms, uniforms);
+    shader.vertexShader = shader.vertexShader
+      .replace("void main() {", "varying float vLocalY;\nvoid main() {")
+      .replace("#include <begin_vertex>", "#include <begin_vertex>\n  vLocalY = position.y;");
     shader.fragmentShader = shader.fragmentShader
-      .replace("void main() {", "uniform vec3 uTint;\nuniform float uAmt;\nvoid main() {")
+      .replace(
+        "void main() {",
+        "uniform vec3 uTint;\nuniform float uAmt;\nuniform vec3 uWine;\nuniform float uLevel;\nuniform float uWineAmt;\nvarying float vLocalY;\nvoid main() {",
+      )
+      .replace(
+        "#include <color_fragment>",
+        `#include <color_fragment>
+  float wineMask = 1.0 - smoothstep(uLevel - 0.05, uLevel + 0.05, vLocalY);
+  float wnv = clamp(abs(dot(normalize(vNormal), normalize(vViewPosition))), 0.0, 1.0);
+  vec3 wineCol = uWine * 0.3 * (1.0 + 1.2 * (1.0 - wnv));
+  diffuseColor.rgb = mix(diffuseColor.rgb, wineCol, wineMask * uWineAmt);`,
+      )
       .replace(
         "#include <emissivemap_fragment>",
-        "#include <emissivemap_fragment>\n  float ndv = clamp(abs(dot(normalize(vNormal), normalize(vViewPosition))), 0.0, 1.0);\n  totalEmissiveRadiance += uTint * uAmt * pow(ndv, 1.6);",
+        `#include <emissivemap_fragment>
+  float ndv = clamp(abs(dot(normalize(vNormal), normalize(vViewPosition))), 0.0, 1.0);
+  totalEmissiveRadiance += uTint * uAmt * pow(ndv, 1.6) * (1.0 - 0.8 * wineMask);
+  float meniscus = exp(-pow((vLocalY - uLevel) * 8.0, 2.0));
+  totalEmissiveRadiance += vec3(0.30, 0.22, 0.14) * meniscus * 0.35;`,
       );
   };
 }
@@ -346,9 +376,14 @@ function Bottle({ wines, index, ctl, look }: { wines: Wine[]; index: number; ctl
   );
   const shadowTex = useShadowTexture();
   const glassBump = useGlassBump(!!look.glass.bump);
+  // cor do vinho usada pelo shader do vidro (muda com a garrafa selecionada)
+  const [wineCol] = useState(() => new THREE.Color(wines[index].liquid));
   const onGlassCompile = useMemo(
-    () => (look.glass.tint ? tintShader(look.glass.tint, look.glass.tintAmt ?? 0.5) : undefined),
-    [look.glass.tint, look.glass.tintAmt],
+    () =>
+      look.glass.tint
+        ? tintShader(look.glass.tint, look.glass.tintAmt ?? 0.5, wineCol, look.shape === "antica" ? 23.3 : 24.3, look.glass.wineAmt ?? 0)
+        : undefined,
+    [look.glass.tint, look.glass.tintAmt, look.glass.wineAmt, look.shape, wineCol],
   );
 
   useFrame((state, dt) => {
@@ -396,6 +431,7 @@ function Bottle({ wines, index, ctl, look }: { wines: Wine[]; index: number; ctl
     const k = 1 - Math.exp(-8 * dt);
     const col = colors[shown];
     capMat.current?.color.lerp(col.cap, k);
+    wineCol.lerp(col.liq, k);
     liqMat.current?.color.lerp(col.liq, k);
     liqMat.current?.emissive.copy(liqMat.current.color); // o vinho "brilha" como se a luz o atravessasse
   });
